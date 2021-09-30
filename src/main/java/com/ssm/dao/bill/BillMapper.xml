@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssm.dao.bill.BillMapper">
+    <select id="queryBills" parameterType="map" resultType="bill">
+        SELECT b.*, p.proName as providerName
+        FROM smbms_bill b, smbms_provider p
+        WHERE b.providerId = p.id
+        <if test="map.queryProductName != null and map.queryProductName != ''">
+            AND b.productName LIKE concat('%',#{map.queryProductName},'%')
+        </if>
+        <if test="map.queryProviderId != 0">
+            AND b.providerId=#{map.queryProviderId}
+        </if>
+        <if test="map.queryIsPayment != 0">
+            AND b.isPayment=#{map.queryIsPayment}
+        </if>
+    </select>
+
+    <insert id="addBill" parameterType="bill">
+        INSERT INTO  smbms_bill(billCode, productName, productDesc, productUnit, productCount,
+                    totalPrice, isPayment, createdBy, creationDate,providerId)
+        VALUES (#{billCode}, #{productName}, #{productDesc}, #{productUnit}, #{productCount},
+                #{totalPrice}, #{isPayment}, #{createdBy}, #{creationDate}, #{providerId})
+    </insert>
+
+    <select id="queryBillById" parameterType="int" resultType="bill">
+        SELECT b.*, p.proName AS providerName
+        FROM smbms_bill b, smbms_provider p
+        WHERE b.providerId = p.id AND b.id = #{id}
+    </select>
+
+    <update id="modifyBill" parameterType="bill">
+        UPDATE smbms_bill
+        SET billCode=#{billCode}, productName=#{productName}, productDesc=#{productDesc},
+            productCount=#{productCount},totalPrice=#{totalPrice}, isPayment=#{isPayment},
+            modifyBy=#{modifyBy}, modifyDate=#{modifyDate}, providerId=#{providerId}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="delBill" parameterType="int">
+        DELETE FROM smbms_bill
+        WHERE id=#{id}
+    </delete>
+
+    <select id="queryBillByProviderId" parameterType="int" resultType="bill">
+        SELECT * FROM smbms_bill WHERE providerId=#{id}
+    </select>
+</mapper>

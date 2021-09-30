@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssm.dao.user.UserMapper">
+    <select id="getLoginUser" resultType="user">
+        SELECT * FROM smbms_user WHERE userCode=#{userCode}
+    </select>
+
+    <update id="savePwd" parameterType="map">
+        UPDATE smbms_user SET userPassword=#{map.password} WHERE id=#{map.id}
+    </update>
+
+    <select id="getUsersCount" parameterType="map" resultType="user">
+        SELECT * FROM smbms_user
+        <where>
+            <if test="map.queryUserName != null and map.queryUserName != ''">
+                AND userName LIKE concat('%', #{map.queryUserName},'%')
+            </if>
+            <if test="map.queryUserRole != 0">
+                AND userRole = #{map.queryUserRole}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryUsers" parameterType="map" resultType="user">
+        SELECT u.*, r.roleName AS userRoleName FROM smbms_user u, smbms_role r
+        WHERE u.userRole = r.id
+        <if test="map.queryUserName != null and map.queryUserName != ''">
+            AND u.userName LIKE concat('%', #{map.queryUserName},'%')
+        </if>
+        <if test="map.queryUserRole != 0">
+            AND u.userRole = #{map.queryUserRole}
+        </if>
+        ORDER BY creationDate DESC limit #{map.start}, #{map.size}
+    </select>
+
+    <select id="queryUserById" parameterType="int" resultType="user">
+        SELECT u.*, r.roleName AS userRoleName
+        FROM smbms_user u, smbms_role r
+        WHERE u.userRole = r.id AND u.id=#{id};
+    </select>
+
+    <select id="queryUserByUserCode" parameterType="java.lang.String" resultType="user">
+        SELECT * FROM  smbms_user WHERE userCode = #{userCode}
+    </select>
+
+    <insert id="addUser" parameterType="user">
+        INSERT INTO smbms_user(userCode, userName, userPassword, gender, birthday, phone, address, userRole, createdBy, creationDate)
+        VALUES (#{userCode}, #{userName}, #{userPassword}, #{gender}, #{birthday}, #{phone},
+              #{address}, #{userRole}, #{createdBy}, #{creationDate})
+    </insert>
+
+
+    <update id="modifyUser" parameterType="user">
+        UPDATE smbms_user
+        SET userName=#{userName}, gender=#{gender}, birthday=#{birthday}, phone=#{phone}, address=#{address}, userRole=#{userRole}
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delUser" parameterType="int">
+        DELETE FROM smbms_user WHERE id=#{id}
+    </delete>
+
+</mapper>
