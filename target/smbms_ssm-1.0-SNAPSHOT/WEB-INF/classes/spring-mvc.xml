@@ -45,6 +45,10 @@
         <!-- 登录拦截器 -->
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
+            <!-- 不拦截静态资源，否则项目启动后，这些静态资源加载不出来 -->
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/images/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
             <bean class="com.ssm.interceptor.LoginInterceptor"/>
         </mvc:interceptor>
 
